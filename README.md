@@ -23,4 +23,48 @@ Giải pháp được đưa ra là viết chương trình lấy thông tin
 
 - Số lần đăng nhập trực tiếp thất bại, gồm có cả user đăng nhập
 
-Tất cả thông tin này chương trình sẽ chuyển sang định sang json và đẩy lên server, server sẽ dựa vào số biến động những số liệu này để gửi cảnh báo về cho người quản trị́ng
+Tất cả thông tin này chương trình sẽ chuyển sang định sang json và đẩy lên server, server sẽ dựa vào số biến động những số liệu này để gửi cảnh báo về cho người quản trị
+
+Tuy nhiên hệ thống sẽ xóa file log định kỳ nên để số lần đăng nhập đúng chương trình sẽ ghi dữ liệu sang file text
+
+# Triển khai
+
+## Trên máy Zabbix Agent
+
+Tải script và tạo thư mục chứa file script:
+
+```sh
+wget 
+
+mkdir -p /var/zabbix/monitor
+
+cp login_monitor.py /var/zabbix/monitor/login_monitor.py
+chmod +x /var/zabbix/monitor/login_monitor.py
+```
+
+Chạy script dữ liệu sẽ dưới dạng file JSON
+
+
+<img src=http://i.imgur.com/gRAAgAM.png width="80%" height="80%" border="1">
+
+Sau khi chạy script xong tại thư mục /var/zabbix/monitor/ sẽ sinh ra file login_monitor.txt chứa các dòng dữ liệu trong file log để lưu dữ liệu khi file log bị xóa
+
+Thêm các UserParameter vào file cấu hình /etc/zabbix/zabbix_agentd.conf
+
+```sh 
+echo " UserParameter=direct.log.fail[*],cat /var/zabbix/monitor/login_monitor.py |grep \": FAILED LOGIN\"|wc -l" >> /etc/zabbix/zabbix_agentd.conf
+
+echo "UserParameter=ssh.log.success[*],cat /var/zabbix/monitor/login_monitor.py |grep \": Accepted password\"|wc -l">>/etc/zabbix/zabbix_agentd.conf
+
+echo "UserParameter=direct.log.success[*],cat /var/zabbix/monitor/login_monitor.py |grep \"pam_unix(login:session): session opened\"|wc -l" >> /etc/zabbix/zabbix_agentd.conf
+
+
+echo "UserParameter=direct.log.fail[*],cat /var/zabbix/monitor/login_monitor.py |grep \": Failed password\"|wc -l" >> /etc/zabbix/zabbix_agentd.conf
+
+
+
+Khởi động lại Zabbix Agent:
+
+```sh
+service zabbix_agent restart
+```
