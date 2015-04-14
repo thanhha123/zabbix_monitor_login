@@ -1,8 +1,8 @@
-#Đặt vấn đề
+#I.Đặt vấn đề
 
 Một server public ra ngoài mạng internet đứng trước nguy cơ mất dữ liệu khi có nhiều cuộc tấn công cố gắng truy cập vào hệ thống với tài khoản quản trị nhằm chiếm quyền sử dụng, thao tác với hệ thống. Vì vậy cần có biện pháp phòng ngừa, cảnh báo khi có sự kiện đăng nhập trực tiếp hoặc SSH.
 
-# Giải pháp
+#II. Giải pháp
 
 
 Khi có sự kiện đăng nhập trực tiếp hay từ xa hệ thống sẽ ghi lại nhật ký trong file log
@@ -27,9 +27,9 @@ Tất cả thông tin này chương trình sẽ chuyển sang định sang j
 
 Tuy nhiên hệ thống sẽ xóa file log định kỳ nên để số lần đăng nhập đúng chương trình sẽ ghi dữ liệu sang file text
 
-# Triển khai
+# III. Triển khai
 
-## Trên máy Zabbix Agent
+## 3.1 Trên máy Zabbix Agent
 
 Tải script và tạo thư mục chứa file script:
 
@@ -60,7 +60,7 @@ echo "UserParameter=direct.log.success[*],cat /var/zabbix/monitor/login_monitor.
 
 
 echo "UserParameter=direct.log.fail[*],cat /var/zabbix/monitor/login_monitor.py |grep \": Failed password\"|wc -l" >> /etc/zabbix/zabbix_agentd.conf
-
+```
 
 
 Khởi động lại Zabbix Agent:
@@ -68,3 +68,7 @@ Khởi động lại Zabbix Agent:
 ```sh
 service zabbix_agent restart
 ```
+
+## 3.2 Trên Zabbix Server
+
+
