@@ -52,14 +52,17 @@ Sau khi chạy script xong tại thư mục /var/zabbix/monitor/ sẽ sinh ra fi
 Thêm các UserParameter vào file cấu hình /etc/zabbix/zabbix_agentd.conf
 
 ```sh 
-echo " UserParameter=direct.log.fail[*],cat /var/zabbix/monitor/login_monitor.py |grep \": FAILED LOGIN\"|wc -l" >> /etc/zabbix/zabbix_agentd.conf
+echo " UserParameter=direct.log.fail[*],cat /var/zabbix/monitor/login_monitor.txt |grep \": FAILED LOGIN\"|wc -l" >> /etc/zabbix/zabbix_agentd.conf
 
-echo "UserParameter=ssh.log.success[*],cat /var/zabbix/monitor/login_monitor.py |grep \": Accepted password\"|wc -l">>/etc/zabbix/zabbix_agentd.conf
+echo "UserParameter=ssh.log.success[*],cat /var/zabbix/monitor/login_monitor.txt |grep \": Accepted password\"|wc -l">>/etc/zabbix/zabbix_agentd.conf
 
-echo "UserParameter=direct.log.success[*],cat /var/zabbix/monitor/login_monitor.py |grep \"pam_unix(login:session): session opened\"|wc -l" >> /etc/zabbix/zabbix_agentd.conf
+echo "UserParameter=direct.log.success[*],cat /var/zabbix/monitor/login_monitor.txt |grep \"pam_unix(login:session): session opened\"|wc -l" >> /etc/zabbix/zabbix_agentd.conf
 
 
-echo "UserParameter=direct.log.fail[*],cat /var/zabbix/monitor/login_monitor.py |grep \": Failed password\"|wc -l" >> /etc/zabbix/zabbix_agentd.conf
+echo "UserParameter=direct.log.fail[*],cat /var/zabbix/monitor/login_monitor.txt |grep \": Failed password\"|wc -l" >> /etc/zabbix/zabbix_agentd.conf
+
+echo "UserParameter=login.monitor,/usr/bin/python /var/zabbix/monitor/login_monitor.py" >> /etc/zabbix/zabbix_agentd.conf
+
 ```
 
 
@@ -71,4 +74,20 @@ service zabbix_agent restart
 
 ## 3.2 Trên Zabbix Server
 
+Bước 1: Tạo host với IP máy cần giám sát
+
+<img src=http://i.imgur.com/JJVfJKb.png width="80%" height="80%" border="1">
+
+Bước 2: Tạo Discovery rules trong host vừa khởi tạo với MACRO LOGIN
+
+<img src=http://i.imgur.com/xTaLfKz.png width="80%" height="80%" border="1">
+
+Bước 3: Khởi tạo các item
+
+<img src=http://i.imgur.com/XObgWOc.png width="80%" height="80%" border="1">
+
+
+Kết quả:
+
+<img src=http://i.imgur.com/mbousuT.png width="80%" height="80%" border="1">
 
